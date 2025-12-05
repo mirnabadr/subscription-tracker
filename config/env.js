@@ -17,5 +17,6 @@ export const QSTASH_TOKEN = process.env.QSTASH_TOKEN;
 export const QSTASH_URL = process.env.QSTASH_URL;
 export const QSTASH_CURRENT_SIGNING_KEY = process.env.QSTASH_CURRENT_SIGNING_KEY;
 export const QSTASH_NEXT_SIGNING_KEY = process.env.QSTASH_NEXT_SIGNING_KEY;
-export const SERVER_URL = process.env.SERVER_URL || 'http://localhost:5500';
+export const SERVER_URL = process.env.SERVER_URL || 
+    (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:5500');
 export const EMAIL_PASSWORD = process.env.EMAIL_PASSWORD;

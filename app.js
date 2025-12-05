@@ -27,14 +27,15 @@ app.get('/', (req, res) => {
     res.send('Welcome to the SubDub Subscription API !');
 });
 app.use(errorMiddleware);
-// listen for requests on port 3000
-// 3000 is the port number
-// () => { is the callback function
-// console.log is the message to be displayed
-app.listen(PORT, async () => {
-    console.log(`subscription tracker is running on http://localhost:${PORT}`);
-    await connectDB();
-});
+
+// Only start server if not in Vercel serverless environment
+// Vercel will use the api/index.js handler instead
+if (process.env.VERCEL !== '1' && !process.env.VERCEL_ENV) {
+    app.listen(PORT, async () => {
+        console.log(`subscription tracker is running on http://localhost:${PORT}`);
+        await connectDB();
+    });
+}
 
 // export the app
 export default app;
