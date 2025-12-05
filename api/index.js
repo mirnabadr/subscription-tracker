@@ -38,11 +38,34 @@ export default async function handler(req, res) {
     await connectDatabase();
   } catch (error) {
     console.error('Failed to connect to database:', error);
+    console.error('Error name:', error.name);
+    console.error('Error message:', error.message);
+    console.error('Error code:', error.code);
+    
     if (!res.headersSent) {
+      // Always show error details in development, but also in production for debugging
+      const errorDetails = process.env.NODE_ENV === 'development' || process.env.VERCEL_ENV === 'development'
+        ? {
+            error: error.message,
+            name: error.name,
+            code: error.code,
+            hint: error.code === 'ENOTFOUND' 
+              ? 'Check your MONGO_URI - hostname not found'
+              : error.code === 'EAUTH'
+              ? 'Check your MongoDB username and password'
+              : error.code === 'ETIMEDOUT'
+              ? 'Connection timeout - check MongoDB network access settings'
+              : 'Check Vercel logs for more details'
+          }
+        : {
+            error: 'Internal server error',
+            hint: 'Check Vercel function logs for details'
+          };
+      
       return res.status(500).json({ 
         success: false, 
         message: 'Database connection failed',
-        ...(process.env.NODE_ENV === 'development' && { error: error.message })
+        ...errorDetails
       });
     }
     return;
