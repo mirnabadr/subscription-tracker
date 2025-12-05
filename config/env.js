@@ -1,9 +1,21 @@
 import {config} from 'dotenv';
 
 const nodeEnv = process.env.NODE_ENV || 'development';
-// Try .local file first, then fall back to regular .env file
-config({path: `.env.${nodeEnv}.local`});
-config({path: `.env.${nodeEnv}`});
+
+// Only load .env files if not in Vercel (Vercel uses environment variables directly)
+if (!process.env.VERCEL && !process.env.VERCEL_ENV) {
+    // Try .local file first, then fall back to regular .env file
+    try {
+        config({path: `.env.${nodeEnv}.local`});
+    } catch (e) {
+        // File doesn't exist, continue
+    }
+    try {
+        config({path: `.env.${nodeEnv}`});
+    } catch (e) {
+        // File doesn't exist, continue
+    }
+}
 
 export const PORT = Number(process.env.PORT) || 3000;
 export const NODE_ENV = process.env.NODE_ENV || 'development';
